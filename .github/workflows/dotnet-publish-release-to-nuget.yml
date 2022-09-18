@@ -5,6 +5,9 @@ on:
       tests_to_run:
         required: false
         type: string
+    secrets:
+      NUGET_API_KEY:
+        required: true
 
 env:
   VERSION: ${{github.ref_name}}
