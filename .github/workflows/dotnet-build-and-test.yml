@@ -5,7 +5,6 @@ on:
       tests_to_run:
         required: false
         type: string
-        default: .
 
 jobs:
   build-and-test:
@@ -17,5 +16,4 @@ jobs:
         with:
           dotnet-version: 6.0.401
       - run: dotnet build -c Release
-      - run: echo Running tests in ${{ inputs.tests_to_run }}
       - run: dotnet test -c Release ${{ inputs.tests_to_run }}
