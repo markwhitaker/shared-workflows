@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "ASSEMBLY_VERSION=$(echo $VERSION | sed -e 's/-.*//')" >> $GITHUB_ENV
+      - run: echo VERSION = $VERSION
+      - run: echo ASSEMBLY_VERSION = $ASSEMBLY_VERSION
       - uses: actions/checkout@v2
       - run: dotnet build -c Release /p:Version=$VERSION /p:AssemblyVersion=$ASSEMBLY_VERSION
       - run: dotnet test -c Release ${{ inputs.tests_to_run }}
