@@ -1,0 +1,22 @@
+name: .NET publish release to NuGet
+on:
+  workflow_call:
+    inputs:
+      tests_to_run:
+        required: false
+        type: string
+
+env:
+  VERSION: ${{github.ref_name}}
+
+jobs:
+  publish-to-nuget:
+    name: Build, test and publish to NuGet.org
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "ASSEMBLY_VERSION=$(echo $VERSION | sed -e 's/-.*//')" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+      - run: dotnet build -c Release /p:Version=$VERSION /p:AssemblyVersion=$ASSEMBLY_VERSION
+      - run: dotnet test -c Release ${{ inputs.tests_to_run }}
+      - run: dotnet pack -c Release -o nugetPackage -p:PackageVersion=$VERSION
+      - run: dotnet nuget push nugetPackage/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
