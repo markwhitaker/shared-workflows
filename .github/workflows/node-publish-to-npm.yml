@@ -6,6 +6,9 @@ on:
       NPM_TOKEN:
         required: true
 
+env:
+  VERSION: ${{github.ref_name}}
+
 jobs:
   publish-to-npm:
     name: Build, test and publish to npm
@@ -18,6 +21,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm test
+      - run: npm config set git-tag-version=false
+      - run: npm version $VERSION
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
