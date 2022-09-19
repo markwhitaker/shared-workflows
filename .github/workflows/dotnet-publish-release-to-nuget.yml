@@ -13,16 +13,39 @@ env:
   VERSION: ${{github.ref_name}}
 
 jobs:
-  publish-to-nuget:
-    name: Build, test and publish to NuGet.org
+  build-and-test:
+    name: Build, test and pack
     runs-on: ubuntu-22.04
     steps:
-      - run: echo "ASSEMBLY_VERSION=$(echo $VERSION | sed -e 's/-.*//')" >> $GITHUB_ENV
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v2
+      - name: Write ASSEMBLY_VERSION environment variable
+        run: echo "ASSEMBLY_VERSION=$(echo $VERSION | sed -e 's/-.*//')" >> $GITHUB_ENV
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.401
-      - run: dotnet build -c Release /p:Version=${{env.VERSION}} /p:AssemblyVersion=${{env.ASSEMBLY_VERSION}}
-      - run: dotnet test -c Release ${{inputs.tests_to_run}}
-      - run: dotnet pack -c Release -o nugetPackage -p:PackageVersion=${{env.VERSION}}
-      - run: dotnet nuget push nugetPackage/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+      - name: Build release build
+        run: dotnet build -c Release /p:Version=${{env.VERSION}} /p:AssemblyVersion=${{env.ASSEMBLY_VERSION}}
+      - name: Test release build
+        run: dotnet test -c Release ${{inputs.tests_to_run}}
+      - name: Pack release build
+        run: dotnet pack -c Release -o nugetPackage -p:PackageVersion=${{env.VERSION}}
+      - name: Save packed artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nugetPackage
+          path: nugetPackage
+
+  publish-to-nuget:
+    name: Publish to NuGet.org
+    needs: build-and-test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Load packed artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nugetPackage
+          path: nugetPackage
+      - name: Publish package to NuGet.org
+        run: dotnet nuget push nugetPackage/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
