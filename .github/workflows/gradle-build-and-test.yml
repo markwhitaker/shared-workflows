@@ -15,6 +15,8 @@ jobs:
           distribution: 'microsoft'
           java-version: '17'
           cache: 'gradle'
+      - name: Make ./gradlew executable
+        run: chmod 777 ./gradlew
       - name: Build
         run: ./gradlew build
       - name: Run tests
