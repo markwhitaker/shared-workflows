@@ -10,8 +10,8 @@ env:
   VERSION: ${{github.ref_name}}
 
 jobs:
-  publish-to-npm:
-    name: Build, test and publish to npm
+  build-test-and-pack:
+    name: Build, test and pack
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -20,15 +20,37 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          registry-url: https://registry.npmjs.org/
       - name: Install project
         run: npm ci
       - name: Test project
         run: npm test
-      - name: Create .npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
-      - name: Publish to npm
+      - name: Create package tarball
         run: |
           npm config set git-tag-version=false
           npm version ${{env.VERSION}}
-          npm publish
+          npm pack
+      - name: Save packed artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: npmPackage
+          path: ./*.tgz
+
+  publish-to-npm:
+    name: Publish to npm
+    needs: build-test-and-pack
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - name: Load packed artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: npmPackage
+          path: npmPackage
+      - name: Create .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
+      - name: Publish to npm
+        run: npm publish npmPackage/*.tgz
