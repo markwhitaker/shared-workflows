@@ -22,9 +22,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.401
+          dotnet-version: 6.0.x
+          dotnet-quality: ga
       - name: Build release build
         run: dotnet build -c Release /p:Version=${{env.VERSION}} /p:AssemblyVersion=${{env.ASSEMBLY_VERSION}}
       - name: Test release build
