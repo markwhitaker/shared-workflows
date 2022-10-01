@@ -1,0 +1,39 @@
+name: .NET build, test and publish (Release)
+on:
+  workflow_call:
+    inputs:
+      tests_to_run:
+        required: false
+        type: string
+      folder_to_publish:
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+      artifact_path:
+        required: true
+        type: string
+
+jobs:
+  build-test-and-publish:
+    name: Build, test and publish
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.401
+      - name: Build release build
+        run: dotnet build -c Release
+      - name: Test release build
+        run: dotnet test -c Release ${{inputs.tests_to_run}}
+      - name: Publish package
+        run: dotnet publish ${{inputs.folder_to_publish}} -c Release -o ${{inputs.artifact_path}}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{inputs.artifact_name}}
+          path: ${{inputs.artifact_path}}
