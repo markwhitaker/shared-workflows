@@ -10,7 +10,7 @@ on:
         required: true
 
 env:
-  VERSION: ${{github.ref_name}}
+  VERSION: $GITHUB_REF_NAME
 
 jobs:
   build-and-test:
