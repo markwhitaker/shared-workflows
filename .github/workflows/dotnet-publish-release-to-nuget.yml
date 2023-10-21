@@ -9,13 +9,16 @@ on:
       NUGET_API_KEY:
         required: true
 
+env:
+  VERSION: $GITHUB_REF_NAME
+
 jobs:
   build-and-test:
     name: Build, test and pack
     runs-on: ubuntu-22.04
     steps:
       - name: Write ASSEMBLY_VERSION environment variable
-        run: echo "ASSEMBLY_VERSION=$(echo $GITHUB_REF_NAME | sed -e 's/-.*//')" >> $GITHUB_ENV
+        run: echo "ASSEMBLY_VERSION=$(echo $VERSION | sed -e 's/-.*//')" >> $GITHUB_ENV
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up .NET
@@ -24,11 +27,11 @@ jobs:
           dotnet-version: 6.0.x
           dotnet-quality: ga
       - name: Build release build
-        run: dotnet build -c Release /p:Version=${{env.GITHUB_REF_NAME}} /p:AssemblyVersion=${{env.ASSEMBLY_VERSION}}
+        run: dotnet build -c Release /p:Version=${{env.VERSION}} /p:AssemblyVersion=${{env.ASSEMBLY_VERSION}}
       - name: Test release build
         run: dotnet test -c Release ${{inputs.tests_to_run}}
       - name: Pack release build
-        run: dotnet pack -c Release -o nugetPackage -p:PackageVersion=${{env.GITHUB_REF_NAME}}
+        run: dotnet pack -c Release -o nugetPackage -p:PackageVersion=${{env.VERSION}}
       - name: Save packed artifact
         uses: actions/upload-artifact@v3
         with:
