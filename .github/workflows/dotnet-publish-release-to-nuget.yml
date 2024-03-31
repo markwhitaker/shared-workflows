@@ -20,9 +20,9 @@ jobs:
       - name: Write ASSEMBLY_VERSION environment variable
         run: echo "ASSEMBLY_VERSION=$(echo $VERSION | sed -e 's/-.*//')" >> $GITHUB_ENV
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
           dotnet-quality: ga
@@ -33,7 +33,7 @@ jobs:
       - name: Pack release build
         run: dotnet pack -c Release -o nugetPackage -p:PackageVersion=${{env.VERSION}}
       - name: Save packed artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nugetPackage
           path: nugetPackage
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Load packed artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: nugetPackage
           path: nugetPackage
