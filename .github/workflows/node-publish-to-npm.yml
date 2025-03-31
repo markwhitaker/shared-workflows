@@ -7,7 +7,7 @@ on:
         required: true
 
 env:
-  VERSION: ${{github.ref_name}}
+  VERSION: ${{github.event.release.tag_name}}
 
 jobs:
   publish-to-npm:
