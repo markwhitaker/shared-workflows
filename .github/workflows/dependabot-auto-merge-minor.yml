@@ -25,13 +25,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log Dependabot metadata
-        run: |
-          echo "Update type: ${{ steps.metadata.outputs.update-type }}"
-          echo "Dependency names: ${{ steps.metadata.outputs.dependency-names }}"
-          echo "Dependency type: ${{ steps.metadata.outputs.dependency-type }}"
-          echo "Package ecosystem: ${{ steps.metadata.outputs.package-ecosystem }}"
-
       - name: Enable auto-merge for semver-minor and semver-patch updates
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
