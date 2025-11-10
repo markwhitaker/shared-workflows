@@ -1,4 +1,4 @@
-name: Auto-merge Dependabot PR for minor dependencies
+name: Auto-merge Dependabot PR for minor & patch dependencies
 on:
   workflow_call:
     inputs:
@@ -25,7 +25,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Enable auto-merge for semver-minor and semver-patch updates
+      - name: Enable auto-merge for minor and patch updates
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
           steps.metadata.outputs.update-type == 'version-update:semver-patch'
