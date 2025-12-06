@@ -2,9 +2,9 @@ name: Node publish to npm
 
 on:
   workflow_call:
-
-permissions:
-  id-token: write
+    secrets:
+      NPM_TOKEN:
+        required: true
 
 env:
   VERSION: ${{github.event.release.tag_name}}
@@ -19,14 +19,14 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 16
           registry-url: https://registry.npmjs.org/
-      - name: Update npm
-        run: npm install -g npm@latest
       - name: Install project
         run: npm ci
       - name: Test project
         run: npm test
+      - name: Create .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
       - name: Publish to npm
         run: |
           npm config set git-tag-version=false
