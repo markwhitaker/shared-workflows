@@ -23,10 +23,14 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Update npm
         run: npm install -g npm@latest
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - name: Install project
-        run: npm ci
+        run: bun install --frozen-lockfile
       - name: Test project
-        run: npm test
+        run: bun test
       - name: Publish to npm
         run: |
           npm config set git-tag-version=false
