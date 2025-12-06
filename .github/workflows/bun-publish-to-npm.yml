@@ -3,6 +3,7 @@ name: Bun publish to npm
 on:
   workflow_call:
 
+
 permissions:
   id-token: write
 
@@ -14,17 +15,18 @@ jobs:
     name: Build, test and publish to npm
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - name: Install project
-        run: bun install
-      - name: Test project
-        run: bun test
-      - name: Publish to npm
-        run: |
-          npm version ${{env.VERSION}}
-          bun publish
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+    - name: Install project
+      run: bun install
+    - name: Test project
+      run: bun test
+    - name: Publish to npm
+      run: |
+        npm config set git-tag-version=false
+        npm version ${{env.VERSION}}
+        bun publish
