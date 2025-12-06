@@ -29,4 +29,4 @@ jobs:
       run: |
         npm config set git-tag-version=false
         npm version ${{env.VERSION}}
-        bun publish
+        bunx npm publish --provenance
